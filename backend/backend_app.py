@@ -13,7 +13,25 @@ POSTS = [
 @app.route('/api/posts', methods=['GET', 'POST'])
 def get_posts():
     if request.method == 'GET':
-        return jsonify(POSTS)
+        sort = request.args.get('sort')
+        direction = request.args.get('direction')
+        if not sort and not direction:
+            return jsonify(POSTS)
+        else:
+            if sort == 'title' and direction == 'asc':
+                sorted_posts = sorted(POSTS, key=lambda post: post["title"])
+                return jsonify(sorted_posts)
+            elif sort == 'title' and direction == 'desc':
+                sorted_posts = sorted(POSTS, key=lambda post: post["title"],
+                                      reverse=True)
+                return jsonify(sorted_posts)
+            elif sort == 'content' and direction == 'asc':
+                sorted_posts = sorted(POSTS, key=lambda post: post["content"])
+                return jsonify(sorted_posts)
+            elif sort == 'content' and direction == 'desc':
+                sorted_posts = sorted(POSTS, key=lambda post: post["content"],
+                                      reverse=True)
+                return jsonify(sorted_posts)
     elif request.method == 'POST':
         # Process the request to add a new post
         # Assuming the request contains JSON data for the new post
