@@ -20,6 +20,30 @@
             <input type="text" id="post-author" placeholder="Enter Post Author">
             <button onclick="addPost()">Add Post</button>
         </div>
+        <div class="input-field">
+            <input type="text" id="search-title" placeholder="Search by Title">
+            <input type="text" id="search-content" placeholder="Search by Content">
+            <input type="text" id="search-author" placeholder="Search by Author">
+            <input type="text" id="search-date" placeholder="Search by Date (YY-MM-DD)">
+            <button onclick="searchPosts()">Search</button>
+        </div>
+        <div class="input-field">
+            <label for="sort-option">Sort By:</label>
+            <select id="sort-option">
+                <option value="">-- Select Option --</option>
+                <option value="title">Title</option>
+                <option value="content">Content</option>
+                <option value="author">Author</option>
+                <option value="date">Date</option>
+            </select>
+            <label for="sort-direction">Sort Direction:</label>
+            <select id="sort-direction">
+                <option value="">-- Select Direction --</option>
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+            <button onclick="sortPosts()">Sort</button>
+        </div>
         <div id="post-container">
             <!-- Blog posts will be inserted here by JavaScript -->
         </div>

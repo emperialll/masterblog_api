@@ -9,14 +9,65 @@ window.onload = function() {
     }
 }
 
-// Function to fetch all the posts from the API and display them on the page
+// Function to fetch all the posts from the API, including sorting
 function loadPosts() {
     // Retrieve the base URL from the input field and save it to local storage
     var baseUrl = document.getElementById('api-base-url').value;
     localStorage.setItem('apiBaseUrl', baseUrl);
 
-    // Use the Fetch API to send a GET request to the /posts endpoint
-    fetch(baseUrl + '/posts')
+    // Retrieve the sort options from the select elements
+    var sortOption = document.getElementById('sort-option').value;
+    var sortDirection = document.getElementById('sort-direction').value;
+
+    // Build the URL for fetching posts, including sorting parameters
+    var url = baseUrl + '/posts';
+    if (sortOption) {
+        url += '?sort=' + sortOption;
+        if (sortDirection) {
+            url += '&direction=' + sortDirection;
+        }
+    }
+
+    // Use the Fetch API to send a GET request to the posts endpoint
+    fetch(url)
+        .then(response => response.json())  // Parse the JSON data from the response
+        .then(data => {  // Once the data is ready, we can use it
+            // Clear out the post container first
+            const postContainer = document.getElementById('post-container');
+            postContainer.innerHTML = '';
+
+            // For each post in the response, create a new post element and add it to the page
+            data.forEach(post => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
+                postDiv.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p><p>${post.author}</p><p>${post.date}</p>
+                <button onclick="deletePost(${post.id})">Delete</button>`;
+                postContainer.appendChild(postDiv);
+            });
+        })
+        .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
+}
+
+// Function to send a GET request to the API to sort the posts
+function sortPosts() {
+    // Retrieve the base URL from the input field
+    var baseUrl = document.getElementById('api-base-url').value;
+
+    // Retrieve the sort options from the select elements
+    var sortOption = document.getElementById('sort-option').value;
+    var sortDirection = document.getElementById('sort-direction').value;
+
+    // Build the URL for sorting the posts
+    var url = baseUrl + '/posts';
+    if (sortOption) {
+        url += '?sort=' + sortOption;
+        if (sortDirection) {
+            url += '&direction=' + sortDirection;
+        }
+    }
+
+    // Use the Fetch API to send a GET request to the sort endpoint
+    fetch(url)
         .then(response => response.json())  // Parse the JSON data from the response
         .then(data => {  // Once the data is ready, we can use it
             // Clear out the post container first
@@ -70,4 +121,52 @@ function deletePost(postId) {
         loadPosts(); // Reload the posts after deleting one
     })
     .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
+}
+
+// Function to fetch posts based on search criteria and sorting
+function searchPosts() {
+    // Retrieve the base URL from the input field
+    var baseUrl = document.getElementById('api-base-url').value;
+
+    // Retrieve the search values from the input fields
+    var searchTitle = document.getElementById('search-title').value;
+    var searchContent = document.getElementById('search-content').value;
+    var searchAuthor = document.getElementById('search-author').value;
+    var searchDate = document.getElementById('search-date').value;
+
+    // Retrieve the sort options from the select elements
+    var sortOption = document.getElementById('sort-option').value;
+    var sortDirection = document.getElementById('sort-direction').value;
+
+    // Build the search query URL with the provided parameters
+    var searchUrl = baseUrl + '/posts/search?'
+        + (searchTitle ? 'title=' + searchTitle + '&' : '')
+        + (searchContent ? 'content=' + searchContent + '&' : '')
+        + (searchAuthor ? 'author=' + searchAuthor + '&' : '')
+        + (searchDate ? 'date=' + searchDate + '&' : '')
+        + (sortOption ? 'sort=' + sortOption + '&' : '')
+        + (sortDirection ? 'direction=' + sortDirection : '');
+
+    // Use the Fetch API to send a GET request to the search API endpoint
+    fetch(searchUrl)
+        .then(response => response.json())  // Parse the JSON data from the response
+        .then(data => {  // Once the data is ready, we can use it
+            // Clear out the post container first
+            const postContainer = document.getElementById('post-container');
+            postContainer.innerHTML = '';
+
+            // For each matched post in the response, create a new post element and add it to the page
+            data.forEach(post => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
+                postDiv.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p><p>${post.author}</p><p>${post.date}</p>
+                <button onclick="deletePost(${post.id})">Delete</button>`;
+                postContainer.appendChild(postDiv);
+            });
+
+            if (data.length === 0) {
+                postContainer.innerHTML = '<p>No matching posts found.</p>';
+            }
+        })
+        .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
 }
