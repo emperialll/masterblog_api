@@ -6,6 +6,7 @@ import json
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
+
 def get_current_date_time():
     current_date_time = datetime.now().strftime('%y-%m-%d, %H:%M')
     return current_date_time
